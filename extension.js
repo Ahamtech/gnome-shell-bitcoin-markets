@@ -47,109 +47,18 @@ const _Colors = {
 
 const _Defaults = [
   {
-    api: 'bitcoinaverage',
-    currency: 'USD',
+    api: 'unocoin',
+    currency: 'INR',
     attribute: 'last'
   }
 ];
 
 
-const MarketIndicatorView = new Lang.Class({
-  Name: 'MarketIndicatorView',
-  Extends: PanelMenu.Button,
-
-  _init: function (options) {
-    this.parent(0);
-    this._options = options;
-    this._initLayout();
-    this._initBehavior();
-  },
-
-  _initLayout: function () {
-    let layout = new St.BoxLayout();
-
-    this._indicatorView = new St.Label({
-      y_align: Clutter.ActorAlign.CENTER,
-      style_class: "indicator"
-    });
-
-    this._statusView = new St.Label({
-      y_align: Clutter.ActorAlign.CENTER,
-      style_class: "status"
-    });
-
-    layout.add_actor(this._statusView);
-    layout.add_actor(this._indicatorView);
-
-    this.actor.add_actor(layout);
-  },
-
-  _initBehavior: function () {
-    let indicator = this;
-
-    this._model = _apiProvider.get(this._options.api).getModel(this._options);
-
-    this._model.connect("update-start", function () {
-      indicator._displayStatus(_Symbols.refresh);
-    });
-
-    this._model.connect("update", function (obj, err, data) {
-      if (err) {
-        indicator._showError(err);
-      } else {
-        indicator._showData(data);
-      }
-    });
-
-    this._displayStatus(_Symbols.refresh);
-  },
-
-  _showError: function (error) {
-    log("err " + JSON.stringify(error));
-    this._displayText('error');
-    this._displayStatus(_Symbols.error);
-  },
-
-  _showData: function (data) {
-    let _StatusToSymbol = {
-      up: _Symbols.up,
-      down: _Symbols.down,
-      unchanged: " "
-    };
-
-    this._displayText(data.text);
-
-    let symbol = " ";
-
-    if (this._options.show_change) {
-      symbol = _StatusToSymbol[data.change];
-    }
-
-    this._displayStatus(symbol);
-  },
-
-  _displayStatus: function (text) {
-    this._statusView.text = text;
-  },
-
-  _displayText: function (text) {
-    this._indicatorView.text = text;
-  },
-
-  destroy: function () {
-    this._model.destroy();
-    this._indicatorView.destroy();
-    this._statusView.destroy();
-
-    this.parent();
-  }
-});
 
 
 
-
-const ClipboardIndicator = Lang.Class({
-    Name: 'ClipboardIndicator',
+const IndicatorCollection = Lang.Class({
+    Name: 'IndicatorCollection',
     Extends: PanelMenu.Button,
 
     _settingsChangedId: null,
@@ -277,67 +186,6 @@ const ClipboardIndicator = Lang.Class({
 });
 
 
-
-
-
-let IndicatorCollection = new Lang.Class({
-  Name: "IndicatorCollection",
-
-  _init: function () {
-    this._indicators = [];
-    this._settings = Convenience.getSettings();
-
-    if (this._settings.get_boolean(FIRST_RUN_KEY)) {
-      this._initDefaults();
-      this._settings.set_boolean(FIRST_RUN_KEY, false);
-    }
-
-    this._settingsChangedId = this._settings.connect(
-      'changed::' + INDICATORS_KEY,
-      Lang.bind(this, this._createIndicators)
-    );
-     let hbox = new St.BoxLayout({ style_class: 'panel-status-menu-box clipboard-indicator-hbox' });
-        let icon = new St.Icon({ icon_name: 'edit-paste-symbolic', //'mail-attachment-symbolic',
-            style_class: 'system-status-icon clipboard-indicator-icon' });
-
-        hbox.add_child(icon);
-    /*    this.parent(0).actor.add_child(hbox);*/
-    this._createIndicators();
-  },
-
-  _initDefaults: function () {
-    this._settings.set_strv(INDICATORS_KEY, _Defaults.map(JSON.stringify));
-  },
-
-  _createIndicators: function () {
-    this._removeAll();
-
-    this._settings.get_strv(INDICATORS_KEY).forEach(function (i) {
-      try {
-        this.add(new MarketIndicatorView(JSON.parse(i)));
-      } catch (e) {
-        log("error creating indicator: " + e);
-      }
-    }, this);
-  },
-
-  _removeAll: function () {
-    this._indicators.forEach(function (i) i.destroy());
-    this._indicators = [];
-  },
-
-  add: function (indicator) {
-    this._indicators.push(indicator);
-    let name = 'bitcoin-market-indicator-' + this._indicators.length;
-    Main.panel.addToStatusArea(name, indicator, 999, 'left');
-  },
-
-  destroy: function () {
-    this._removeAll();
-    this._settings.disconnect(this._settingsChangedId);
-  }
-});
-
 let _indicatorCollection;
 let _apiProvider;
 
@@ -347,7 +195,7 @@ function init(metadata) {
 
 function enable() {
   _apiProvider = new ApiProvider.ApiProvider();
-  _indicatorCollection = new ClipboardIndicator();
+  _indicatorCollection = new IndicatorCollection();
   Main.panel.addToStatusArea('bitcoin', _indicatorCollection, 1);
 }
 
