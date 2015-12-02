@@ -7,3 +7,7 @@
 .indicator {
     /* background-color: blue; */
 }
+.bitcoinprice-icon{
+	max-height: 40px,
+	max-width : 40px
+}

@@ -18,6 +18,7 @@ const PanelMenu = imports.ui.panelMenu;
 const PopupMenu = imports.ui.popupMenu;
 const Panel = imports.ui.panel;
 
+
 const Gettext = imports.gettext.domain('gnome-shell-extensions');
 const _ = Gettext.gettext;
 const N_ = function(e) e;
@@ -28,6 +29,8 @@ const Extension = ExtensionUtils.getCurrentExtension();
 const ApiProvider = Extension.imports.ApiProvider;
 
 const Convenience = Extension.imports.convenience;
+
+const Prefs = Extension.imports.prefs;
 
 const INDICATORS_KEY = "indicators";
 const FIRST_RUN_KEY = "first-run";
@@ -76,10 +79,10 @@ const IndicatorCollection = Lang.Class({
     _init: function() {
         this._settings = Convenience.getSettings();
         this.parent(0.0, "BitcoinMarkets");
-        let hbox = new St.BoxLayout({ style_class: 'system-status-icon' });
+        let hbox = new St.BoxLayout();
         let icon = new St.Icon({ style_class: 'bitcoinprice-icon' });
-        log(Extension.path);
-        icon.set_gicon(new Gio.FileIcon({ file: Gio.file_new_for_path( Extension.path + '/Bitcoin-icon.png')}));
+
+        icon.set_gicon(new Gio.FileIcon({ file: Gio.file_new_for_path( Extension.path + '/Bitcoin.svg')}));
 
         hbox.add_child(icon);
         this.actor.add_child(hbox);
@@ -159,15 +162,28 @@ const IndicatorCollection = Lang.Class({
 
     _loadSettings: function () {
         this._settings = Prefs.SettingsSchema;
+        log("on setting schange");
         this._settingsChangedId = this._settings.connect('changed',
             Lang.bind(this, this._onSettingsChange));
-
-        this._fetchSettings();
-
-        if (ENABLE_KEYBINDING)
-            this._bindShortcuts();
     },
 
+    _onSettingsChange: function () {
+      log("on setting schange");
+        let that = this;
+        while (that.clipItemsRadioGroup.length > 0) {
+            let oldest = that.clipItemsRadioGroup.shift();
+            oldest.actor.disconnect(oldest.buttonPressId);
+            oldest.destroy();
+        };
+
+        this._settings.get_strv(INDICATORS_KEY).forEach(function (i) {
+          try {
+            that._addEntry(JSON.parse(i));
+          } catch (e) {
+            log("error creating indicator: " + e);
+          }
+        }, this);
+    },
 
     _disconnectSettings: function () {
         if (!this._settingsChangedId)
