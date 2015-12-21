@@ -709,6 +709,9 @@ const CoinsecureApi = new Lang.Class({
       let key = 'last_price';
       let find = function (data) {
           let rate = data["result"]["0"]["lasttrade"]["0"]["ask"]["0"]['0']["rate"];
+          if (this.ARGV !== undefined){
+            rate = data["result"]["0"]["lasttrade"]["0"]["bid"]["0"]['0']["rate"];
+          }
           return Number(rate) /100;
       };
       return {
