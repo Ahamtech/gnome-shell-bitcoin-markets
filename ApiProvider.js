@@ -708,10 +708,7 @@ const CoinsecureApi = new Lang.Class({
       let renderChange = new ChangeRenderer();
       let key = 'last_price';
       let find = function (data) {
-          let rate = data["result"]["0"]["lasttrade"]["0"]["ask"]["0"]['0']["rate"];
-          if (this.ARGV !== undefined){
-            rate = data["result"]["0"]["lasttrade"]["0"]["bid"]["0"]['0']["rate"];
-          }
+          let rate = data["ask"];
           return Number(rate) /100;
       };
       return {
@@ -734,7 +731,7 @@ const CoinsecureApi = new Lang.Class({
   },
 
   getUrl: function (options) {
-    return "https://api.coinsecure.in/v0/noauth/lasttrade";
+    return "https://api.coinsecure.in/v0/noauth/newticker";
   }
 });
 
