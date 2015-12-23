@@ -80,7 +80,7 @@ const IndicatorCollection = Lang.Class({
         this._settings = Convenience.getSettings();
         this.parent(0.0, "BitcoinMarkets");
         let hbox = new St.BoxLayout();
-        let icon = new St.Icon({ style_class: 'bitcoinprice-icon' });
+        let icon = new St.Icon();
 
         icon.set_gicon(new Gio.FileIcon({ file: Gio.file_new_for_path( Extension.path + '/Bitcoin.svg')}));
 
@@ -212,7 +212,7 @@ function init(metadata) {
 function enable() {
   _apiProvider = new ApiProvider.ApiProvider();
   _indicatorCollection = new IndicatorCollection();
-  Main.panel.addToStatusArea('bitcoin', _indicatorCollection, 1);
+  Main.panel.addToStatusArea('bitcoin', _indicatorCollection,1);
 }
 
 function disable() {
