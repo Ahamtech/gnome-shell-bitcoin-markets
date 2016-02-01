@@ -4,6 +4,8 @@
 
 Fork of https://github.com/OttoAllmendinger/gnome-shell-bitcoin-markets
 
+Retweaked to use Indian BitCoin Market Watch
+
 Displays Bitcoin market information in the gnome shell. Available APIs:
 
     BitcoinAverage.com
@@ -12,6 +14,8 @@ Displays Bitcoin market information in the gnome shell. Available APIs:
     Coinbase
     BX.in.th
     Paymium
+    Coinsecure
+    Unocoin
 
 The latest development version can be installed manually with these commands
 
