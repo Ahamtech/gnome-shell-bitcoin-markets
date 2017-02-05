@@ -22,3 +22,13 @@ The latest development version can be installed manually with these commands
     git clone https://github.com/Ahamtech/gnome-shell-bitcoin-markets.git
     cd gnome-shell-bitcoin-markets
     make install
+
+# License
+
+Gnome Sheel Bitcoin Markets is Copyright © 2016 Ahamtech. It is free software, and may be redistributed under the terms specified in the [LICENSE](https://github.com/ahamtech/gnome-shell-bitcoin-markets/blob/master/LICENSE) file.
+
+# About Ahamtech
+
+> Gnome Sheel Bitcoin Markets is maintained by Ahamtech.
+
+We love open source software, Erlang, Elixir, and Phoenix. See our other [opensource projects](github.com/ahamtech), or hire our [Elixir Phoenix development team](ahamtech.in) to design, develop, and grow your product.
